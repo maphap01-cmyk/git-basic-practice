@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Góc Bếp Việt - Website Chia Sẻ Công Thức Nấu Ăn</title>
+    <meta name="description" content="Khám phá hàng ngàn công thức nấu ăn ngon, phong phú từ Món Á, Món Âu đến Đồ uống và Món chay dinh dưỡng.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="container nav-wrapper">
+            <a href="#" class="logo" id="logoReload">
+                <i class="fa-solid fa-utensils logo-icon"></i>
+                <div class="logo-text">
+                    <span class="brand-name">Góc Bếp Việt</span>
+                    <span class="brand-tagline">Hương Vị Yêu Thương</span>
+                </div>
+            </a>
+
+            <div class="nav-actions">
+                <button class="btn btn-outline" id="btnAdminLinks">
+                    <i class="fa-solid fa-server"></i> Quản Trị Hệ Thống
+                </button>
+                <button class="btn btn-primary" id="btnOpenAddModal">
+                    <i class="fa-solid fa-plus"></i> Thêm Công Thức
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-backdrop"></div>
+        <div class="container hero-content">
+            <span class="hero-badge"><i class="fa-solid fa-fire"></i> Khám Phá Năng Lượng Ẩm Thực</span>
+            <h1 class="hero-title">Khám Phá & Chia Sẻ <br><span class="highlight-text">Công Thức Nấu Ăn</span> Độc Đáo</h1>
+            <p class="hero-subtitle">Tìm kiếm hàng nghìn món ăn ngon, dễ làm với hướng dẫn từng bước chi tiết và định lượng chuẩn xác.</p>
+            
+            <!-- Main Search Bar -->
+            <div class="search-box-wrapper">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Nhập tên món ăn (ví dụ: Phở bò, Pizza, Salad, Bún chả...)...">
+                    <button class="btn btn-search" id="btnSearch">Tìm Kiếm</button>
+                </div>
+            </div>
+
+            <!-- Quick Category Filter Chips -->
+            <div class="category-chips" id="categoryChips">
+                <button class="chip active" data-id="">Tất Cả Món</button>
+                <!-- Dynamic Chips populated by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- System Quick Stats Bar -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="fa-solid fa-book-bookmark"></i></div>
+                    <div class="stat-info">
+                        <h3 id="statRecipes">0</h3>
+                        <p>Công Thức Món Ăn</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fa-solid fa-list-check"></i></div>
+                    <div class="stat-info">
+                        <h3 id="statCategories">0</h3>
+                        <p>Danh Mục Ẩm Thực</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fa-solid fa-carrot"></i></div>
+                    <div class="stat-info">
+                        <h3 id="statIngredients">0</h3>
+                        <p>Nguyên Liệu Chuẩn</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fa-solid fa-star"></i></div>
+                    <div class="stat-info">
+                        <h3 id="statReviews">0</h3>
+                        <p>Đánh Giá Yêu Thích</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Recipe Explorer Section -->
+    <main class="main-content container">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Danh Sách Công Thức Nấu Ăn</h2>
+                <p class="section-subtitle">Lựa chọn công thức yêu thích và bắt đầu gian bếp của bạn ngay hôm nay</p>
+            </div>
+            <div class="filter-controls">
+                <select id="ingredientFilter" class="select-filter">
+                    <option value="">Lọc theo nguyên liệu...</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Recipe Cards Grid -->
+        <div class="recipe-grid" id="recipeGrid">
+            <!-- Skeleton Loading Placeholders -->
+            <div class="card-skeleton"></div>
+            <div class="card-skeleton"></div>
+            <div class="card-skeleton"></div>
+        </div>
+    </main>
+
+    <!-- Modal Xem Chi Tiết Công Thức (Recipe Detail Modal) -->
+    <div class="modal" id="detailModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-lg">
+            <button class="modal-close" id="btnCloseDetail">&times;</button>
+            <div class="modal-body" id="detailModalBody">
+                <!-- Dynamic Content Loaded by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Thêm Công Thức Mới (Add Recipe Modal) -->
+    <div class="modal" id="addModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-md">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-cloud-arrow-up"></i> Thêm Công Thức Nấu Ăn Mới</h3>
+                <button class="modal-close" id="btnCloseAdd">&times;</button>
+            </div>
+            <form id="addRecipeForm">
+                <div class="form-group">
+                    <label>Tên Món Ăn <span class="required">*</span></label>
+                    <input type="text" name="title" required placeholder="Ví dụ: Phở Bò Tái Nạm, Pizza Hải Sản...">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Danh Mục <span class="required">*</span></label>
+                        <select name="category_id" id="addCategorySelect" required>
+                            <!-- Dynamic Options -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Độ Khó</label>
+                        <select name="difficulty">
+                            <option value="Dễ">Dễ</option>
+                            <option value="Trung bình" selected>Trung bình</option>
+                            <option value="Khó">Khó</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Chuẩn Bị (Phút)</label>
+                        <input type="number" name="prep_time" value="15" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Thời Gian Nấu (Phút)</label>
+                        <input type="number" name="cook_time" value="30" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Khẩu Phần (Người)</label>
+                        <input type="number" name="servings" value="2" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Lượng Calo (kcal)</label>
+                        <input type="number" name="calories" value="350" min="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Link Ảnh Món Ăn (URL)</label>
+                    <input type="url" name="image_url" placeholder="https://images.unsplash.com/photo-...">
+                </div>
+
+                <div class="form-group">
+                    <label>Mô Tả Ngắn</label>
+                    <textarea name="description" rows="2" placeholder="Tóm tắt hương vị và điểm đặc sắc của món ăn..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Các Bước Thực Hiện <span class="required">*</span></label>
+                    <textarea name="instructions" rows="5" required placeholder="Bước 1: Sơ chế...&#10;Bước 2: Ninh nước dùng...&#10;Bước 3: Hoàn thành..."></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btnCancelAdd">Hủy Bỏ</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Đăng Công Thức</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Links Quản Trị Hệ Thống (System Admin Links Modal) -->
+    <div class="modal" id="adminModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-md">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-network-wired"></i> Bảng Quản Trị & Giám Sát Hệ Thống</h3>
+                <button class="modal-close" id="btnCloseAdmin">&times;</button>
+            </div>
+            <div class="admin-links-grid">
+                <a href="/phpmyadmin/" target="_blank" class="admin-card blue">
+                    <i class="fa-solid fa-database"></i>
+                    <div>
+                        <h4>phpMyAdmin</h4>
+                        <p>Quản lý Cơ sở dữ liệu MySQL (Port 80 / Proxy)</p>
+                    </div>
+                </a>
+                <a href="http://localhost:3001" target="_blank" class="admin-card orange">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <div>
+                        <h4>Grafana Dashboard</h4>
+                        <p>Giám sát Metrics Prometheus & Loki LogQL (Port 3001)</p>
+                    </div>
+                </a>
+                <a href="http://localhost:9091" target="_blank" class="admin-card red">
+                    <i class="fa-solid fa-fire-burner"></i>
+                    <div>
+                        <h4>Prometheus Server</h4>
+                        <p>Thu thập chỉ số hiệu năng hệ thống (Port 9091)</p>
+                    </div>
+                </a>
+                <a href="/metrics" target="_blank" class="admin-card green">
+                    <i class="fa-solid fa-code"></i>
+                    <div>
+                        <h4>App Prometheus Metrics</h4>
+                        <p>Metrics chuẩn Express.js (/metrics)</p>
+                    </div>
+                </a>
+                <a href="/api/health" target="_blank" class="admin-card purple">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                    <div>
+                        <h4>API Health Check</h4>
+                        <p>Kiểm tra trạng thái kết nối MySQL (/api/health)</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-info">
+                <div class="logo-text">
+                    <span class="brand-name">Góc Bếp Việt</span>
+                    <span class="brand-tagline">Website Chia Sẻ Công Thức Nấu Ăn Đề 29</span>
+                </div>
+                <p>Hệ thống triển khai đầy đủ Nginx Reverse Proxy, MySQL, phpMyAdmin, Prometheus, Grafana, Loki + LogQL & Security Hardening.</p>
+            </div>
+            <div class="footer-copy">
+                <p>&copy; 2026 Góc Bếp Việt - Đồ án Kiểm tra Kỹ năng 3 (Đề 29).</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom App JS -->
+    <script src="js/app.js"></script>
+</body>
+</html>
