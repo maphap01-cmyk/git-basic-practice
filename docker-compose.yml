@@ -1,0 +1,159 @@
+services:
+  # 1. MySQL Database Service
+  db:
+    image: mysql:8.0
+    container_name: recipe_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_secure_password_999
+      MYSQL_DATABASE: recipe_db
+      MYSQL_USER: recipe_user
+      MYSQL_PASSWORD: recipe_secret_123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_secure_password_999"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - recipe_net
+
+  # 2. phpMyAdmin Database Management Interface
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: recipe_phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: recipe_user
+      PMA_PASSWORD: recipe_secret_123
+      UPLOAD_LIMIT: 20M
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - recipe_net
+
+  # 3. Recipe Web Application (Node.js Express)
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: recipe_app
+    restart: always
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: recipe_user
+      DB_PASSWORD: recipe_secret_123
+      DB_NAME: recipe_db
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - recipe_net
+
+  # 4. Nginx Reverse Proxy with Hardening & Access Logs
+  nginx:
+    image: nginx:alpine
+    container_name: recipe_nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - app
+      - phpmyadmin
+    networks:
+      - recipe_net
+
+  # 5. Prometheus Nginx Exporter
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.1.0
+    container_name: recipe_nginx_exporter
+    restart: always
+    command:
+      - -nginx.scrape-uri=http://nginx:80/nginx_status
+    depends_on:
+      - nginx
+    networks:
+      - recipe_net
+
+  # 6. Prometheus Monitoring System
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: recipe_prometheus
+    restart: always
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - recipe_net
+
+  # 7. Grafana Loki Log Aggregation System
+  loki:
+    image: grafana/loki:2.9.8
+    container_name: recipe_loki
+    restart: always
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml:ro
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - recipe_net
+
+  # 8. Promtail Log Collector
+  promtail:
+    image: grafana/promtail:2.9.8
+    container_name: recipe_promtail
+    restart: always
+    volumes:
+      - ./promtail/promtail-config.yaml:/etc/promtail/config.yml:ro
+      - nginx_logs:/var/log/nginx:ro
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - recipe_net
+
+  # 9. Grafana Dashboards & Analytics
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: recipe_grafana
+    restart: always
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - recipe_net
+
+networks:
+  recipe_net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  nginx_logs:
+  prometheus_data:
+  grafana_data:
