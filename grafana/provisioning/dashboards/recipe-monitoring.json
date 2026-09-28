@@ -1,0 +1,113 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Tổng Số Công Thức Nấu Ăn (Total Recipes)",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "recipe_app_total_recipes",
+          "legendFormat": "Công thức"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Nginx Active Connections",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "id": 2,
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "nginx_connections_active",
+          "legendFormat": "Active Connections"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Tốc Độ Yêu Cầu HTTP (Request Rate - req/sec)",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 0 },
+      "id": 3,
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "sum(rate(http_requests_total[1m])) by (method, status)",
+          "legendFormat": "{{method}} {{status}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Thời Gian Phản Hồi Trung Bình (Average Response Latency)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 4,
+      "targets": [
+        {
+          "datasource": "Prometheus",
+          "expr": "rate(http_request_duration_seconds_sum[1m]) / rate(http_request_duration_seconds_count[1m])",
+          "legendFormat": "Response Time (s)"
+        }
+      ]
+    },
+    {
+      "type": "logs",
+      "title": "Nhật Ký Nginx / Web App (Loki LogQL Live Logs)",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 14 },
+      "id": 5,
+      "targets": [
+        {
+          "datasource": "Loki",
+          "expr": "{job=\"nginx_logs\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showLabels": true,
+        "wrapLogMessage": true,
+        "enableLogDetails": true
+      }
+    },
+    {
+      "type": "logs",
+      "title": "Cảnh Báo Lỗi Nginx HTTP 4xx/5xx (Loki LogQL Error Stream)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 6,
+      "targets": [
+        {
+          "datasource": "Loki",
+          "expr": "{job=\"nginx_logs\"} |~ \"4[0-9][0-9]|5[0-9][0-9]\"",
+          "refId": "B"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["recipe", "nginx", "prometheus", "loki"],
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Dashboard Giám Sát Website Công Thức Nấu Ăn (Recipe System Overview)",
+  "uid": "recipe-monitoring-dashboard"
+}
